@@ -47,8 +47,43 @@ Not applicable.
 5. Problem Statement
    1. Use the below given data set
    Data Set
+   Answer:
+   > source('D:/ACADGILD/Assignments from Dashboard/rscript/Session16Assignment1.R')
+   > #a)
+   > #using slr dataset
+   > #reading the dataset and viewing
+   > slr <- read.csv("D:/ACADGILD/Excel files/slr.csv")
+   > slr1<- slr
+   > View(slr1)
 
-   2. Perform the below given activities:
+   > #features
+   > dim(slr1)
+   [1] 12  3
+   > str(slr1)
+   'data.frame':	12 obs. of  3 variables:
+   $ Observation.no: int  1 2 3 4 5 6 7 8 9 10 ...
+   $ Advt          : int  92 94 97 98 100 102 104 105 105 107 ...
+   $ Sales         : int  930 900 1020 990 1100 1050 1150 1120 1130 1200 ...
+   > 
+   
+   > library(psych)
+   > describe(slr1)
+               vars  n    mean     sd median trimmed    mad min  max range  skew kurtosis    se
+Observation.no    1 12    6.50   3.61    6.5     6.5   4.45   1   12    11  0.00    -1.50  1.04
+Advt              2 12  101.75   5.59  103.0   101.9   5.93  92  110    18 -0.30    -1.32  1.61
+Sales             3 12 1088.33 112.40 1110.0  1091.0 133.43 900 1250   350 -0.22    -1.35 32.45
+> summary(slr1)
+ Observation.no       Advt            Sales     
+ Min.   : 1.00   Min.   : 92.00   Min.   : 900  
+ 1st Qu.: 3.75   1st Qu.: 97.75   1st Qu.:1012  
+ Median : 6.50   Median :103.00   Median :1110  
+ Mean   : 6.50   Mean   :101.75   Mean   :1088  
+ 3rd Qu.: 9.25   3rd Qu.:105.50   3rd Qu.:1162  
+ Max.   :12.00   Max.   :110.00   Max.   :1250  
+> 
+          
+
+2. Perform the below given activities:
    a. Predict the no of comments in next H hrs
 
   Note:-
@@ -58,9 +93,146 @@ Not applicable.
   3. compare with linear models and report the accuracy
   4. create a graph displaying the accuracy of all models
 
+> #visualization
+> hist(slr1$Advt ,xlab = "advt", ylab = "Frequency",main="Histogram of advt",col="red")
+> hist(slr1$Sales ,xlab = "sales", ylab = "Frequency",main="Histogram of sales",col="blue")
+> plot(slr1$Advt,slr1$Sales)
+> #***NOTE***
+> #using linear regression model technique
+> #using slr1 dataset
+> #linear regression model
+> model<- lm(slr1$Advt~slr1$Sales)
+> model
+
+Call:
+lm(formula = slr1$Advt ~ slr1$Sales)
+
+Coefficients:
+(Intercept)   slr1$Sales  
+   50.33545      0.04724  
+
+> #predicting 
+> Pred<- predict(lm(slr1$Sales~slr1$Advt))
+> Pred
+        1         2         3         4         5         6         7         8         9        10        11        12 
+ 902.3965  940.5374  997.7487 1016.8192 1054.9601 1093.1009 1131.2418 1150.3123 1150.3123 1188.4532 1188.4532 1245.6645 
+> 
+
+pred<- predict(model,newdata= slr1Test,type = "response")
+table(slr1$Advt,pred>= 0.5)
+
+conf<- table(slr1$Advt,pred)
+conf
+
+> predict(model)
+        1         2         3         4         5         6         7         8         9        10        11        12 
+ 94.27009  92.85284  98.52183  97.10458 102.30115  99.93907 104.66323 103.24598 103.71840 107.02531 109.38738 107.97014 
+> Pred=predict(model)
+> slr1$predicted =NA
+> slr1$predicted =Pred
+> slr1$error =model$residuals
+> 
+
+> #verfify residuals
+> error<- residuals(lm(slr1$Sales~slr1$Advt))
+> error
+        1         2         3         4         5         6         7         8         9        10        11        12 
+ 27.60349 -40.53740  22.25127 -26.81917  45.03994 -43.10094  18.75817 -30.31227 -20.31227  11.54684  61.54684 -25.66449 
+> 
+> summary(error)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+-43.101 -27.692  -4.383   0.000  23.589  61.547 
+> 
+
+> #check and interpreting the summary
+> summary(model)
+
+Call:
+lm(formula = slr1$Advt ~ slr1$Sales)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-2.3874 -1.7089  0.4351  1.3997  2.0609 
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 50.335452   5.418206   9.290 3.11e-06 ***
+slr1$Sales   0.047242   0.004954   9.535 2.45e-06 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 1.847 on 10 degrees of freedom
+Multiple R-squared:  0.9009,	Adjusted R-squared:  0.891 
+F-statistic: 90.93 on 1 and 10 DF,  p-value: 2.454e-06
+
+> 
+
+> #result of all of our models 
+> summary(model)
+
+Call:
+lm(formula = slr1$Advt ~ slr1$Sales)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-2.3874 -1.7089  0.4351  1.3997  2.0609 
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 50.335452   5.418206   9.290 3.11e-06 ***
+slr1$Sales   0.047242   0.004954   9.535 2.45e-06 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 1.847 on 10 degrees of freedom
+Multiple R-squared:  0.9009,	Adjusted R-squared:  0.891 
+F-statistic: 90.93 on 1 and 10 DF,  p-value: 2.454e-06
+
+summary(model1)
+summary(model2)
+
+> #model coefficients
+> model
+
+Call:
+lm(formula = slr1$Advt ~ slr1$Sales)
+
+Coefficients:
+(Intercept)   slr1$Sales  
+   50.33545      0.04724  
+
+> model1
+> model2
+
+> slr1$coefficients<- NA
+> slr1$coefficients<- model$coefficients
+> slr1$coefficients
+ [1] 50.33545215  0.04724154 50.33545215  0.04724154 50.33545215  0.04724154 50.33545215  0.04724154 50.33545215  0.04724154
+[11] 50.33545215  0.04724154
+> 
+
+#test and training accuracy
+#dataset slr1
+
+set.seed(1)
+split<- sample.split(slr1$Advt,SplitRatio = 0.70)
+slr1Train <- subset(slr1,split == TRUE)
+slr1Test<- subset(slr1, split == FALSE)
 
 
+#train
+model1<- lm(slr1Train$Advt~slr1Train$Sales)
+model1
 
+summary(model1)
+#accuracy is 0.926
+
+#test
+model2<- lm(slr1Test$Advt~slr1Test$Sales)
+model2
+
+summary(model2)
+#accuracy is 0.871
                                                                                             3
 Data Analytics
 
